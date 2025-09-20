@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts'
-import { getTransactions, getCategories } from '../lib/supabase'
-import { useAuthStore } from '../lib/auth-store'
+import { useAccountTransactions } from '../hooks/useAccountTransactions'
+import { formatCurrency } from '../utils/currency'
 import type { Transaction, Category } from '../lib/supabase'
 
 interface MonthlyData {
@@ -18,30 +18,10 @@ interface CategoryData {
 }
 
 const Charts: React.FC = () => {
-  const { user } = useAuthStore()
-  const [transactions, setTransactions] = useState<Transaction[]>([])
-  const [categories, setCategories] = useState<Category[]>([])
-  const [loading, setLoading] = useState(true)
+  const { transactions, loading } = useAccountTransactions()
   const [selectedPeriod, setSelectedPeriod] = useState('6') // months
 
-  useEffect(() => {
-    loadData()
-  }, [])
 
-  const loadData = async () => {
-    try {
-      const [transactionsData, categoriesData] = await Promise.all([
-          getTransactions(user.id),
-          getCategories()
-      ])
-      setTransactions(transactionsData.data || [])
-      setCategories(categoriesData.data || [])
-    } catch (error) {
-      console.error('Erro ao carregar dados:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const getMonthlyData = (): MonthlyData[] => {
     const months = parseInt(selectedPeriod)
@@ -104,12 +84,7 @@ const Charts: React.FC = () => {
       .slice(0, 10) // Top 10 categories
   }
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
-    }).format(value)
-  }
+
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {

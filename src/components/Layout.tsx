@@ -1,8 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { LayoutDashboard, BarChart3, Target, LogOut, User } from 'lucide-react'
+import { LayoutDashboard, BarChart3, Target, LogOut, User, Settings } from 'lucide-react'
 import { signOut } from '../lib/supabase'
 import { useAuthStore } from '../lib/auth-store'
+import AccountModal from './AccountModal'
 
 interface LayoutProps {
   children: React.ReactNode
@@ -12,13 +13,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const location = useLocation()
   const navigate = useNavigate()
   const { user } = useAuthStore()
+  const [accountModalOpen, setAccountModalOpen] = useState(false)
 
   const handleSignOut = async () => {
     await signOut()
     navigate('/login')
   }
 
-  const menuItems = [
+  const mainMenuItems = [
     {
       path: '/dashboard',
       icon: LayoutDashboard,
@@ -36,19 +38,55 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     }
   ]
 
+  const bottomMenuItems = [
+    {
+      path: '/accounts',
+      icon: Settings,
+      label: 'Contas'
+    }
+  ]
+
   return (
-    <div className="min-h-screen bg-[#f1f3ef] flex">
+    <div className="h-screen bg-[#f1f3ef] flex overflow-hidden">
       {/* Sidebar */}
-      <div className="w-64 bg-[#16c64f] shadow-lg flex flex-col">
+      <div className="w-64 bg-[#16c64f] shadow-lg flex flex-col h-full">
         {/* Logo */}
         <div className="p-6 border-b border-green-400">
           <h1 className="text-white text-xl font-bold">Finança Fácil</h1>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 p-4">
+        <nav className="flex-1 p-4 flex flex-col overflow-y-auto">
+          {/* Main menu items */}
           <ul className="space-y-2">
-            {menuItems.map((item) => {
+            {mainMenuItems.map((item) => {
+              const Icon = item.icon
+              const isActive = location.pathname === item.path
+              
+              return (
+                <li key={item.path}>
+                  <Link
+                    to={item.path}
+                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
+                      isActive
+                        ? 'bg-white text-[#16c64f] shadow-md'
+                        : 'text-white hover:bg-green-500'
+                    }`}
+                  >
+                    <Icon className="w-5 h-5" />
+                    <span className="font-medium">{item.label}</span>
+                  </Link>
+                </li>
+              )
+            })}
+          </ul>
+
+          {/* Spacer */}
+          <div className="flex-1"></div>
+
+          {/* Bottom menu items */}
+          <ul className="space-y-2 mb-4">
+            {bottomMenuItems.map((item) => {
               const Icon = item.icon
               const isActive = location.pathname === item.path
               
@@ -94,11 +132,20 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col h-full overflow-hidden">
         <main className="flex-1 overflow-y-auto p-6">
           {children}
         </main>
       </div>
+
+      {/* Modals */}
+      <AccountModal
+        isOpen={accountModalOpen}
+        onClose={() => setAccountModalOpen(false)}
+        mode="create"
+      />
+
+
     </div>
   )
 }

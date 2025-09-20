@@ -3,43 +3,31 @@ import { Plus, TrendingUp, TrendingDown, DollarSign, Trash2 } from 'lucide-react
 import { getCategories, getSubcategories, getTransactions, createTransaction, deleteTransaction } from '../lib/supabase'
 import { useAuthStore } from '../lib/auth-store'
 import type { Category, Subcategory, Transaction } from '../lib/supabase'
+import { formatCurrency, formatCurrencyInput, parseCurrencyInput } from '../utils/currency'
+import { toast } from 'sonner'
+import { useAccountTransactions } from '../hooks/useAccountTransactions'
+import { useAccount } from '../contexts/AccountContext'
+import { supabase } from '../lib/supabase'
+import AccountSelector from '../components/AccountSelector'
+import AccountModal from '../components/AccountModal'
 
-// Função para formatar valor monetário brasileiro
-const formatCurrency = (value: number): string => {
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL'
-  }).format(value)
-}
 
-// Função para aplicar máscara monetária no input
-const formatCurrencyInput = (value: string): string => {
-  // Remove tudo que não é dígito
-  const numericValue = value.replace(/\D/g, '')
-  
-  if (!numericValue) return ''
-  
-  // Converte para número e divide por 100 para ter os centavos
-  const numberValue = parseInt(numericValue) / 100
-  
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL'
-  }).format(numberValue)
-}
-
-// Função para converter valor formatado para número
-const parseCurrencyInput = (value: string): number => {
-  const numericValue = value.replace(/[^\d]/g, '')
-  return numericValue ? parseInt(numericValue) / 100 : 0
-}
 
 const Dashboard: React.FC = () => {
   const { user } = useAuthStore()
+  const { currentAccount } = useAccount()
+  const {
+    transactions,
+    loading,
+    createTransaction,
+    deleteTransaction,
+    totals
+  } = useAccountTransactions()
+  
+  const { balance, income: totalIncome, expense: totalExpense } = totals
   const [categories, setCategories] = useState<Category[]>([])
   const [subcategories, setSubcategories] = useState<Subcategory[]>([])
-  const [transactions, setTransactions] = useState<Transaction[]>([])
-  const [loading, setLoading] = useState(true)
+  const [showAccountModal, setShowAccountModal] = useState(false)
   // Formulário sempre visível - removido estado showForm
   const [formData, setFormData] = useState({
     title: '',
@@ -52,21 +40,34 @@ const Dashboard: React.FC = () => {
   })
 
   useEffect(() => {
-    loadData()
+    loadCategories()
   }, [])
 
-  const loadData = async () => {
+  const loadCategories = async (transactionType?: string) => {
     try {
-      const [categoriesData, transactionsData] = await Promise.all([
-        getCategories(),
-        getTransactions(user.id)
-      ])
-      setCategories(categoriesData.data || [])
-      setTransactions(transactionsData.data || [])
+      let query = supabase
+        .from('categories')
+        .select('*')
+        .order('name')
+
+      // Filtrar categorias baseado no tipo de transação
+      if (transactionType) {
+        if (transactionType === 'entrada') {
+          // Categorias típicas de receita
+          query = query.in('name', ['Salário', 'Freelance', 'Investimentos', 'Vendas', 'Outros Rendimentos'])
+        } else if (transactionType === 'saida') {
+          // Categorias típicas de despesa
+          query = query.not('name', 'in', '("Salário","Freelance","Investimentos","Vendas","Outros Rendimentos")')
+        }
+      }
+
+      const { data, error } = await query
+      
+      if (error) throw error
+      setCategories(data || [])
     } catch (error) {
-      console.error('Erro ao carregar dados:', error)
-    } finally {
-      setLoading(false)
+      console.error('Erro ao carregar categorias:', error)
+      toast.error('Erro ao carregar categorias')
     }
   }
 
@@ -121,8 +122,7 @@ const Dashboard: React.FC = () => {
     }
 
     try {
-      const result = await createTransaction({
-        user_id: user.id,
+      await createTransaction({
         title: formData.title.trim(),
         amount: amount,
         type: formData.type,
@@ -131,12 +131,6 @@ const Dashboard: React.FC = () => {
         transaction_date: formData.transaction_date,
         description: formData.description.trim() || undefined
       })
-      
-      if (result.error) {
-        console.error('Erro do Supabase:', result.error)
-        alert(`Erro ao salvar transação: ${result.error.message}`)
-        return
-      }
       
       // Limpa o formulário apenas se a transação foi salva com sucesso
       setFormData({
@@ -149,45 +143,26 @@ const Dashboard: React.FC = () => {
         description: ''
       })
       setSubcategories([])
-      loadData()
-      alert('Transação salva com sucesso!')
+      toast.success('Transação salva com sucesso!')
     } catch (error) {
       console.error('Erro ao criar transação:', error)
-      alert(`Erro inesperado ao salvar transação: ${error instanceof Error ? error.message : 'Erro desconhecido'}`)
+      toast.error(`Erro inesperado ao salvar transação: ${error instanceof Error ? error.message : 'Erro desconhecido'}`)
     }
   }
 
   const handleDelete = async (id: string) => {
     if (window.confirm('Tem certeza que deseja excluir esta transação?')) {
       try {
-        console.log('Tentando excluir transação com ID:', id)
-        const result = await deleteTransaction(id)
-        
-        if (result.error) {
-          console.error('Erro retornado pelo Supabase:', result.error)
-          alert(`Erro ao excluir transação: ${result.error.message}`)
-          return
-        }
-        
-        console.log('Transação excluída com sucesso')
-        alert('Transação excluída com sucesso!')
-        await loadData()
+        await deleteTransaction(id)
+        toast.success('Transação excluída com sucesso!')
       } catch (error) {
         console.error('Erro ao excluir transação:', error)
-        alert(`Erro inesperado ao excluir transação: ${error instanceof Error ? error.message : 'Erro desconhecido'}`)
+        toast.error(`Erro inesperado ao excluir transação: ${error instanceof Error ? error.message : 'Erro desconhecido'}`)
       }
     }
   }
 
-  const totalIncome = transactions
-    .filter(t => t.type === 'entrada')
-    .reduce((sum, t) => sum + t.amount, 0)
 
-  const totalExpense = transactions
-    .filter(t => t.type === 'saida')
-    .reduce((sum, t) => sum + t.amount, 0)
-
-  const balance = totalIncome - totalExpense
 
   if (loading) {
     return (
@@ -201,6 +176,11 @@ const Dashboard: React.FC = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-900">Painel Financeiro</h1>
+        <div className="w-64">
+          <AccountSelector
+            onCreateAccount={() => setShowAccountModal(true)}
+          />
+        </div>
       </div>
 
       {/* Summary Cards */}
@@ -297,7 +277,11 @@ const Dashboard: React.FC = () => {
                 </label>
                 <select
                   value={formData.type}
-                  onChange={(e) => setFormData({ ...formData, type: e.target.value as 'entrada' | 'saida' })}
+                  onChange={(e) => {
+                    const newType = e.target.value as 'entrada' | 'saida';
+                    setFormData({ ...formData, type: newType, category_id: '', subcategory_id: '' });
+                    loadCategories(newType); // Recarregar categorias filtradas
+                  }}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#16c64f] focus:border-transparent"
                 >
                   <option value="saida">Despesa</option>
@@ -463,6 +447,12 @@ const Dashboard: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Account Modal */}
+      <AccountModal 
+        isOpen={showAccountModal} 
+        onClose={() => setShowAccountModal(false)} 
+      />
     </div>
   )
 }

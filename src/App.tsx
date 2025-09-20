@@ -1,14 +1,17 @@
 import React, { useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { useAuthStore } from './lib/auth-store'
+import { AccountProvider } from './contexts/AccountContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import Layout from './components/Layout'
+import { PWAInstallPrompt } from './components/PWAInstallPrompt'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
 import Goals from './pages/Goals'
 import Charts from './pages/Charts'
+import { Accounts } from './pages/Accounts'
 
 // Componente que decide se mostra a landing page ou redireciona para o dashboard
 function HomeRoute() {
@@ -50,27 +53,43 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={
           <ProtectedRoute>
-            <Layout>
-              <Dashboard />
-            </Layout>
+            <AccountProvider>
+              <Layout>
+                <Dashboard />
+              </Layout>
+            </AccountProvider>
           </ProtectedRoute>
         } />
         <Route path="/goals" element={
           <ProtectedRoute>
-            <Layout>
-              <Goals />
-            </Layout>
+            <AccountProvider>
+              <Layout>
+                <Goals />
+              </Layout>
+            </AccountProvider>
           </ProtectedRoute>
         } />
         <Route path="/charts" element={
           <ProtectedRoute>
-            <Layout>
-              <Charts />
-            </Layout>
+            <AccountProvider>
+              <Layout>
+                <Charts />
+              </Layout>
+            </AccountProvider>
+          </ProtectedRoute>
+        } />
+        <Route path="/accounts" element={
+          <ProtectedRoute>
+            <AccountProvider>
+              <Layout>
+                <Accounts />
+              </Layout>
+            </AccountProvider>
           </ProtectedRoute>
         } />
         <Route path="/" element={<HomeRoute />} />
       </Routes>
+      <PWAInstallPrompt />
     </Router>
   )
 }

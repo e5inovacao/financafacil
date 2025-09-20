@@ -1,50 +1,20 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Plus, Target, TrendingUp, Calendar, DollarSign } from 'lucide-react'
-import { getFinancialGoals, createFinancialGoal, addGoalContribution, getGoalContributions } from '../lib/supabase'
-import { useAuthStore } from '../lib/auth-store'
+import { formatCurrency, formatCurrencyInput, parseCurrencyInput } from '../utils/currency'
+import { toast } from 'sonner'
+import { useAccountGoals } from '../hooks/useAccountGoals'
 import type { FinancialGoal, GoalContribution } from '../lib/supabase'
 
-// Função para formatar valor monetário brasileiro
-const formatCurrency = (value: number): string => {
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL'
-  }).format(value)
-}
 
-// Função para aplicar máscara monetária no input
-const formatCurrencyInput = (value: string): string => {
-  // Remove tudo que não é dígito
-  const numericValue = value.replace(/\D/g, '')
-  
-  if (!numericValue) return ''
-  
-  // Converte para número e divide por 100 para ter os centavos
-  const numberValue = parseInt(numericValue) / 100
-  
-  // Formata como moeda brasileira
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL'
-  }).format(numberValue)
-}
-
-// Função para converter valor formatado para número
-const parseCurrencyInput = (value: string): number => {
-  const numericValue = value.replace(/[^\d]/g, '')
-  return numericValue ? parseInt(numericValue) / 100 : 0
-}
-
-interface GoalWithContributions extends FinancialGoal {
-  contributions: GoalContribution[]
-  totalContributed: number
-  progressPercentage: number
-}
 
 const Goals: React.FC = () => {
-  const { user } = useAuthStore()
-  const [goals, setGoals] = useState<GoalWithContributions[]>([])
-  const [loading, setLoading] = useState(true)
+  const {
+    goals,
+    loading,
+    createGoal,
+    addContribution,
+    getGoalProgress
+  } = useAccountGoals()
   const [showForm, setShowForm] = useState(false)
   const [showContributionForm, setShowContributionForm] = useState<string | null>(null)
   const [showCongratulations, setShowCongratulations] = useState<string | null>(null)
@@ -55,104 +25,63 @@ const Goals: React.FC = () => {
   })
   const [contributionAmount, setContributionAmount] = useState('')
 
-  useEffect(() => {
-    loadGoals()
-  }, [])
 
-  const loadGoals = async () => {
-    try {
-      const { data: goalsData } = await getFinancialGoals(user.id)
-      if (goalsData && goalsData.length > 0) {
-        const goalsWithContributions = await Promise.all(
-          goalsData.map(async (goal) => {
-            const contributions = await getGoalContributions(goal.id)
-            const totalContributed = contributions.data?.reduce((sum, c) => sum + c.amount, 0) || 0
-            const progressPercentage = (totalContributed / goal.targetAmount) * 100
-            
-            return {
-              ...goal,
-              contributions,
-              totalContributed,
-              progressPercentage: Math.min(progressPercentage, 100)
-            }
-          })
-        )
-        setGoals(goalsWithContributions)
-      } else {
-        setGoals([])
-      }
-    } catch (error) {
-      console.error('Erro ao carregar metas:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
+
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!user) return
 
     try {
       const targetAmount = parseCurrencyInput(formData.target_amount)
       
       if (targetAmount <= 0) {
-        console.error('O valor alvo deve ser maior que zero')
+        toast.error('O valor alvo deve ser maior que zero')
         return
       }
 
-      await createFinancialGoal({
-        user_id: user.id,
+      await createGoal({
         name: formData.name,
-          targetAmount: targetAmount,
-          targetDate: formData.target_date
+        targetAmount: targetAmount,
+        targetDate: formData.target_date
       })
       
       setFormData({ name: '', target_amount: '', target_date: '' })
       setShowForm(false)
-      loadGoals()
+      toast.success('Meta criada com sucesso!')
     } catch (error) {
       console.error('Erro ao criar meta:', error)
+      toast.error('Erro ao criar meta')
     }
   }
 
   const handleContribution = async (goalId: string) => {
-    if (!user || !contributionAmount) return
+    if (!contributionAmount) return
 
     try {
       const amount = parseFloat(contributionAmount)
       
       if (amount <= 0) {
-        console.error('O valor do aporte deve ser maior que zero')
+        toast.error('O valor do aporte deve ser maior que zero')
         return
       }
 
-      await addGoalContribution({
-        goalId: goalId,
-        userId: user.id,
-        amount: amount
-      })
+      await addContribution(goalId, amount)
       
       setContributionAmount('')
       setShowContributionForm(null)
       
-      // Reload goals to check if any goal reached 100%
-      await loadGoals()
-      
       // Check if goal reached 100% after contribution
-      const { data: updatedGoals } = await getFinancialGoals(user.id)
-      const updatedGoal = updatedGoals?.find(g => g.id === goalId)
-      if (updatedGoal) {
-        const contributions = await getGoalContributions(goalId)
-        const totalContributed = contributions.data?.reduce((sum, c) => sum + c.amount, 0) || 0
-        const progressPercentage = (totalContributed / updatedGoal.targetAmount) * 100
-        
-        if (progressPercentage >= 100) {
-          setShowCongratulations(goalId)
-          setTimeout(() => setShowCongratulations(null), 5000)
-        }
+      const progress = getGoalProgress(goalId)
+      if (progress && progress.progressPercentage >= 100) {
+        setShowCongratulations(goalId)
+        setTimeout(() => setShowCongratulations(null), 5000)
       }
+      
+      toast.success('Aporte adicionado com sucesso!')
     } catch (error) {
       console.error('Erro ao adicionar aporte:', error)
+      toast.error('Erro ao adicionar aporte')
     }
   }
 

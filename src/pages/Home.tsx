@@ -91,25 +91,50 @@ function FAQSection() {
 }
 
 export default function Home() {
-  const whatsappNumber = "5511999999999"; // Substitua pelo número real
+  const whatsappNumber = "5527998344720"; // Número do WhatsApp
   const whatsappMessage = "Olá! Gostaria de saber mais sobre o Finança Fácil.";
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
 
+  const scrollToPlans = () => {
+    const plansSection = document.getElementById('planos');
+    if (plansSection) {
+      plansSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white">
-      {/* Header com botão de login */}
+      {/* Header com menu */}
       <header className="absolute top-0 left-0 right-0 z-10 py-6">
         <div className="max-w-6xl mx-auto px-6 flex justify-between items-center">
           <div className="text-gray-900 font-bold text-2xl">
             Finança Fácil
           </div>
-          <Link 
-            to="/login"
-            className="flex items-center bg-gray-100 backdrop-blur-sm text-gray-900 px-6 py-2 rounded-lg font-semibold hover:bg-gray-200 transition-all border border-gray-200"
-          >
-            <LogIn className="w-4 h-4 mr-2" />
-            Entrar
-          </Link>
+          
+          {/* Menu superior direito */}
+          <nav className="flex items-center space-x-6">
+            <button 
+              onClick={scrollToPlans}
+              className="text-gray-700 hover:text-green-600 font-medium transition-colors"
+            >
+              Preço
+            </button>
+            <Link 
+              to="/login" 
+              className="text-gray-700 hover:text-green-600 font-medium transition-colors"
+            >
+              Login
+            </Link>
+            <a 
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors font-medium flex items-center space-x-2"
+            >
+              <MessageCircle className="w-4 h-4" />
+              <span>Contato</span>
+            </a>
+          </nav>
         </div>
       </header>
       {/* Hero Section - Apresentação do Aplicativo */}
@@ -129,26 +154,17 @@ export default function Home() {
             <span className="font-semibold text-gray-900">94% dos brasileiros</span> acreditam que poderiam ter mais controle financeiro se tivessem uma ferramenta mais qualificada. Evolua sua gestão financeira com o <span className="font-semibold text-green-600">Finança Fácil</span>.
           </p>
           
-          {/* Call to Action */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
-            <Link 
-              to="/register"
-              className="bg-green-600 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-green-700 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-            >
-              Começar gratuitamente
-            </Link>
-            <a 
-              href={whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="border-2 border-green-600 text-green-600 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-green-50 transition-all"
-            >
-              Falar com especialista
-            </a>
-          </div>
+          {/* Call to Action Principal */}
+          <section className="text-center">
+            <div className="bg-gradient-to-r from-green-600 to-green-700 text-white px-12 py-6 rounded-2xl font-bold text-xl hover:from-green-700 hover:to-green-800 transition-all shadow-2xl hover:shadow-3xl transform hover:-translate-y-2 cursor-pointer inline-block mb-6"
+                 onClick={scrollToPlans}>Comece agora</div>
+            <p className="text-gray-600 text-lg font-medium">
+              Transforme suas finanças em poucos cliques
+            </p>
+          </section>
           
           <p className="text-sm text-gray-500">
-            ✓ 7 dias grátis • ✓ Sem cartão de crédito • ✓ Cancele quando quiser
+            ✓ 7 dias grátis • ✓ Sem compromisso • ✓ Cancele quando quiser
           </p>
         </div>
       </section>
@@ -259,17 +275,17 @@ export default function Home() {
                   Diagnóstico Financeiro Completo
                 </h3>
                 <p className="text-gray-600 leading-relaxed mb-6">
-                  Conecte suas contas bancárias e cartões para uma análise automática e detalhada da sua situação financeira atual. Nossa IA identifica padrões e oportunidades de melhoria.
+                  Registre suas receitas e despesas de forma simples e organize suas finanças com categorias personalizadas. Tenha uma visão clara da sua situação financeira atual.
                 </p>
                 
                 <div className="space-y-3">
                   <div className="flex items-center text-sm text-gray-600">
                     <Check className="w-4 h-4 text-green-600 mr-2 flex-shrink-0" />
-                    Conexão segura com bancos
+                    Lançamento manual simples
                   </div>
                   <div className="flex items-center text-sm text-gray-600">
                     <Check className="w-4 h-4 text-green-600 mr-2 flex-shrink-0" />
-                    Categorização automática
+                    Categorização personalizada
                   </div>
                   <div className="flex items-center text-sm text-gray-600">
                     <Check className="w-4 h-4 text-green-600 mr-2 flex-shrink-0" />
@@ -426,10 +442,10 @@ export default function Home() {
                 <Shield className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                Segurança de Nível Bancário
+                Segurança e Privacidade
               </h3>
               <p className="text-gray-600 leading-relaxed mb-6">
-                Seus dados financeiros estão protegidos com criptografia de ponta e tecnologia de segurança avançada. Confiança total em cada transação.
+                Seus dados financeiros estão protegidos com criptografia avançada e tecnologia de segurança. Privacidade total para suas informações pessoais.
               </p>
               <div className="flex items-center text-green-600 font-semibold">
                 <span>Saiba mais</span>
@@ -458,26 +474,34 @@ export default function Home() {
           {/* Seção de Estatísticas */}
           <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-3xl p-12 text-white">
             <div className="text-center mb-12">
-              <h3 className="text-3xl font-bold mb-4">Resultados que Falam por Si</h3>
-              <p className="text-green-100 text-lg">Veja o impacto real que nossa plataforma tem na vida das pessoas</p>
+              <h3 className="text-3xl font-bold mb-4">Por que escolher o Finança Fácil?</h3>
+              <p className="text-green-100 text-lg">Recursos poderosos para transformar sua gestão financeira</p>
             </div>
             
             <div className="grid md:grid-cols-4 gap-8 text-center">
-              <div>
-                <div className="text-4xl font-bold mb-2">10k+</div>
-                <div className="text-green-100">Usuários ativos</div>
+              <div className="group">
+                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-4 mx-auto group-hover:bg-white/30 transition-colors">
+                  <div className="w-6 h-6 bg-white rounded-lg"></div>
+                </div>
+                <div className="text-green-100 font-medium">Controle total das suas finanças</div>
               </div>
-              <div>
-                <div className="text-4xl font-bold mb-2">R$ 50M+</div>
-                <div className="text-green-100">Gerenciados na plataforma</div>
+              <div className="group">
+                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-4 mx-auto group-hover:bg-white/30 transition-colors">
+                  <div className="w-6 h-6 bg-white rounded-lg"></div>
+                </div>
+                <div className="text-green-100 font-medium">Relatórios detalhados e gráficos</div>
               </div>
-              <div>
-                <div className="text-4xl font-bold mb-2">95%</div>
-                <div className="text-green-100">Satisfação dos usuários</div>
+              <div className="group">
+                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-4 mx-auto group-hover:bg-white/30 transition-colors">
+                  <div className="w-6 h-6 bg-white rounded-lg"></div>
+                </div>
+                <div className="text-green-100 font-medium">Metas financeiras personalizadas</div>
               </div>
-              <div>
-                <div className="text-4xl font-bold mb-2">24/7</div>
-                <div className="text-green-100">Suporte disponível</div>
+              <div className="group">
+                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-4 mx-auto group-hover:bg-white/30 transition-colors">
+                  <div className="w-6 h-6 bg-white rounded-lg"></div>
+                </div>
+                <div className="text-green-100 font-medium">Interface intuitiva e fácil de usar</div>
               </div>
             </div>
           </div>
@@ -501,7 +525,7 @@ export default function Home() {
             </p>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Plano Mensal */}
             <div className="bg-white border-2 border-gray-200 rounded-3xl p-8 hover:border-green-300 hover:shadow-xl hover:scale-105 transition-all duration-300 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-green-100 to-green-200 rounded-full -translate-y-16 translate-x-16 opacity-50"></div>
@@ -553,7 +577,7 @@ export default function Home() {
               <div className="absolute inset-0 bg-gradient-to-br from-green-50/50 via-transparent to-green-100/30"></div>
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-20">
                 <span className="bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-3 rounded-full text-sm font-bold shadow-lg">
-                  ⭐ Recomendado
+                  Recomendado
                 </span>
               </div>
               <div className="text-center relative z-10">
@@ -567,7 +591,7 @@ export default function Home() {
                 </div>
                 <div className="mb-6">
                   <div className="inline-flex items-center bg-green-600 text-white px-3 py-1 rounded-full text-sm font-bold mt-2">
-                    💰 Economize R$ 30,70
+                    Economize R$ 30,70
                   </div>
                   <br />
                   <span className="text-sm text-gray-500">vs. plano mensal</span>
@@ -605,71 +629,6 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            
-            {/* Plano Anual */}
-            <div className="bg-white border-2 border-gray-200 rounded-3xl p-8 hover:border-green-300 hover:shadow-xl hover:scale-105 transition-all duration-300 relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-green-100 to-green-200 rounded-full -translate-y-16 -translate-x-16 opacity-50"></div>
-              <div className="text-center relative z-10">
-                <div className="inline-flex items-center bg-yellow-100 text-yellow-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
-                  💎 Máxima Economia
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">Anual</h3>
-                <div className="mb-2">
-                  <span className="text-5xl font-bold text-green-600">R$ 479,00</span>
-                  <span className="text-gray-600 text-lg">/ano</span>
-                </div>
-                <div className="mb-6">
-                  <div className="inline-flex items-center bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 py-2 rounded-full text-sm font-bold mt-2">
-                    🔥 Economize R$ 239,80
-                  </div>
-                  <br />
-                  <span className="text-sm text-gray-500 mt-1 block">vs. plano mensal</span>
-                </div>
-                <ul className="text-left space-y-4 mb-8">
-                  <li className="flex items-center">
-                    <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                      <Check className="w-4 h-4 text-green-600" />
-                    </div>
-                    <span className="text-gray-700">Controle completo de finanças</span>
-                  </li>
-                  <li className="flex items-center">
-                    <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                      <Check className="w-4 h-4 text-green-600" />
-                    </div>
-                    <span className="text-gray-700">Relatórios e gráficos</span>
-                  </li>
-                  <li className="flex items-center">
-                    <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                      <Check className="w-4 h-4 text-green-600" />
-                    </div>
-                    <span className="text-gray-700">Metas financeiras</span>
-                  </li>
-                  <li className="flex items-center">
-                    <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                      <Check className="w-4 h-4 text-green-600" />
-                    </div>
-                    <span className="text-gray-700">Suporte via WhatsApp</span>
-                  </li>
-                  <li className="flex items-center">
-                    <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                      <Check className="w-4 h-4 text-green-600" />
-                    </div>
-                    <span className="text-gray-700 font-semibold">🎯 Consultoria mensal</span>
-                  </li>
-                  <li className="flex items-center">
-                    <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                      <Check className="w-4 h-4 text-green-600" />
-                    </div>
-                    <span className="text-gray-700 font-semibold">⚡ Acesso prioritário</span>
-                  </li>
-                </ul>
-                <div className="flex justify-center">
-                  <button className="bg-gradient-to-r from-green-600 to-green-700 text-white py-3 px-8 rounded-lg font-semibold hover:from-green-700 hover:to-green-800 transition-all duration-300 transform hover:scale-105 shadow-lg">
-                    Começar Agora
-                  </button>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </section>
@@ -681,7 +640,7 @@ export default function Home() {
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full translate-y-32 -translate-x-32"></div>
         <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
           <div className="inline-flex items-center bg-white/10 backdrop-blur-sm text-white px-6 py-3 rounded-full text-sm font-semibold mb-8">
-            💬 Suporte Especializado
+            Suporte Especializado
           </div>
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
             Precisa de ajuda?
@@ -716,6 +675,24 @@ export default function Home() {
       {/* FAQ */}
       <FAQSection />
 
+      {/* Botão Flutuante do WhatsApp */}
+      <a 
+        href={whatsappUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-6 right-6 z-50 bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110"
+      >
+        <svg 
+          width="24" 
+          height="24" 
+          viewBox="0 0 24 24" 
+          fill="currentColor" 
+          className="w-6 h-6"
+        >
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.465 3.488"/>
+        </svg>
+      </a>
+
       {/* CTA Final */}
       <section className="py-24 bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-green-900/10 to-transparent"></div>
@@ -723,7 +700,7 @@ export default function Home() {
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-green-600/5 rounded-full translate-y-48 translate-x-48"></div>
         <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
           <div className="inline-flex items-center bg-green-500/10 backdrop-blur-sm text-green-400 px-6 py-3 rounded-full text-sm font-semibold mb-8">
-            🚀 Transformação Financeira
+            Transformação Financeira
           </div>
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
             Comece hoje mesmo a
@@ -757,7 +734,7 @@ export default function Home() {
             </div>
             <div className="flex items-center">
               <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-              <span>Sem cartão de crédito</span>
+              <span>Sem compromisso</span>
             </div>
             <div className="flex items-center">
               <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
@@ -846,7 +823,7 @@ export default function Home() {
               <div className="flex items-center space-x-6 mt-4 md:mt-0">
                 <span className="text-gray-400 text-sm">Feito com</span>
                 <div className="flex items-center space-x-1">
-                  <span className="text-red-500">❤️</span>
+                  <span className="text-red-500">♥</span>
                   <span className="text-gray-400 text-sm">no Brasil</span>
                 </div>
               </div>
