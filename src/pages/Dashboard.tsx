@@ -449,10 +449,11 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Account Modal */}
-      <AccountModal 
-        isOpen={showAccountModal} 
-        onClose={() => setShowAccountModal(false)} 
-      />
+      <AccountModal
+          isOpen={showAccountModal}
+          onClose={() => setShowAccountModal(false)}
+          mode="create"
+        />
     </div>
   )
 }

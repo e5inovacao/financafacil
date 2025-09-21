@@ -60,10 +60,7 @@ export const AccountModal: React.FC<AccountModalProps> = ({
           setCurrentAccount(newAccount);
         }
       } else if (mode === 'edit' && account) {
-        await updateAccount(account.id, {
-          name: formData.name,
-          is_default: formData.is_default
-        });
+        await updateAccount(account.id, formData.name);
       }
       onClose();
     } catch (err) {

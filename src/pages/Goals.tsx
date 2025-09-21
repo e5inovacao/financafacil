@@ -12,7 +12,7 @@ const Goals: React.FC = () => {
     goals,
     loading,
     createGoal,
-    addContribution,
+    addToGoal,
     getGoalProgress
   } = useAccountGoals()
   const [showForm, setShowForm] = useState(false)
@@ -41,9 +41,9 @@ const Goals: React.FC = () => {
       }
 
       await createGoal({
-        name: formData.name,
-        targetAmount: targetAmount,
-        targetDate: formData.target_date
+        title: formData.name,
+        target_amount: targetAmount,
+        target_date: formData.target_date
       })
       
       setFormData({ name: '', target_amount: '', target_date: '' })
@@ -66,14 +66,14 @@ const Goals: React.FC = () => {
         return
       }
 
-      await addContribution(goalId, amount)
+      await addToGoal(goalId, amount)
       
       setContributionAmount('')
       setShowContributionForm(null)
       
       // Check if goal reached 100% after contribution
-      const progress = getGoalProgress(goalId)
-      if (progress && progress.progressPercentage >= 100) {
+      const updatedGoal = goals.find(g => g.id === goalId)
+      if (updatedGoal && getGoalProgress(updatedGoal) >= 100) {
         setShowCongratulations(goalId)
         setTimeout(() => setShowCongratulations(null), 5000)
       }
@@ -191,15 +191,15 @@ const Goals: React.FC = () => {
 
             <div className="flex items-start justify-between mb-4">
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-gray-900 mb-1">{goal.name}</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-1">{goal.title}</h3>
                 <div className="flex items-center text-sm text-gray-600 space-x-4">
                   <div className="flex items-center space-x-1">
                     <DollarSign className="w-4 h-4" />
-                    <span>{formatCurrency(goal.targetAmount)}</span>
+                    <span>{formatCurrency(goal.target_amount)}</span>
                   </div>
                   <div className="flex items-center space-x-1">
                     <Calendar className="w-4 h-4" />
-                    <span>{new Date(goal.targetDate || '').toLocaleDateString('pt-BR')}</span>
+                    <span>{new Date(goal.target_date || '').toLocaleDateString('pt-BR')}</span>
                   </div>
                 </div>
               </div>
@@ -210,17 +210,17 @@ const Goals: React.FC = () => {
             <div className="mb-4">
               <div className="flex justify-between text-sm text-gray-600 mb-1">
                 <span>Progresso</span>
-                <span>{goal.progressPercentage.toFixed(1)}%</span>
+                <span>{getGoalProgress(goal).toFixed(1)}%</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-3">
                 <div
                   className="bg-[#16c64f] h-3 rounded-full transition-all duration-300"
-                  style={{ width: `${goal.progressPercentage}%` }}
+                  style={{ width: `${getGoalProgress(goal)}%` }}
                 ></div>
               </div>
               <div className="flex justify-between text-xs text-gray-500 mt-1">
-                <span>{formatCurrency(goal.totalContributed)}</span>
-                <span>{formatCurrency(goal.targetAmount)}</span>
+                <span>{formatCurrency(goal.current_amount)}</span>
+                <span>{formatCurrency(goal.target_amount)}</span>
               </div>
             </div>
 
@@ -257,27 +257,14 @@ const Goals: React.FC = () => {
               <button
                 onClick={() => setShowContributionForm(goal.id)}
                 className="w-full bg-[#16c64f] text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors flex items-center justify-center space-x-2"
-                disabled={goal.progressPercentage >= 100}
+                disabled={getGoalProgress(goal) >= 100}
               >
                 <TrendingUp className="w-4 h-4" />
-                <span>{goal.progressPercentage >= 100 ? 'Meta Atingida!' : 'Fazer Aporte'}</span>
+                <span>{getGoalProgress(goal) >= 100 ? 'Meta Atingida!' : 'Fazer Aporte'}</span>
               </button>
             )}
 
-            {/* Contributions History */}
-            {goal.contributions.length > 0 && (
-              <div className="mt-4 pt-4 border-t border-gray-200">
-                <h4 className="text-sm font-medium text-gray-700 mb-2">Últimos Aportes</h4>
-                <div className="space-y-1 max-h-20 overflow-y-auto">
-                  {goal.contributions.slice(-3).map((contribution) => (
-                    <div key={contribution.id} className="flex justify-between text-xs text-gray-600">
-                      <span>{new Date(contribution.created_at).toLocaleDateString('pt-BR')}</span>
-                      <span className="text-[#16c64f] font-medium">+{formatCurrency(contribution.amount)}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+
           </div>
         ))}
       </div>
