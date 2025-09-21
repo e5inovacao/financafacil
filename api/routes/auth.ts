@@ -4,6 +4,7 @@
  */
 import { Router, type Request, type Response } from 'express';
 import { createClient } from '@supabase/supabase-js';
+import { body, validationResult } from 'express-validator';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
@@ -31,18 +32,42 @@ const supabaseAdmin = createClient(
   }
 );
 
+// Validation middleware for registration
+const validateRegistration = [
+  body('email')
+    .isEmail()
+    .normalizeEmail()
+    .withMessage('Please provide a valid email address'),
+  body('password')
+    .isLength({ min: 8 })
+    .withMessage('Password must be at least 8 characters long')
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/)
+    .withMessage('Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'),
+  body('fullName')
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .withMessage('Full name must be between 2 and 100 characters')
+    .matches(/^[a-zA-ZÀ-ÿ\s]+$/)
+    .withMessage('Full name can only contain letters and spaces')
+];
+
 /**
  * User Registration
  * POST /api/auth/register
  */
-router.post('/register', async (req: Request, res: Response): Promise<void> => {
+router.post('/register', validateRegistration, async (req: Request, res: Response): Promise<void> => {
   try {
-    const { email, password, fullName } = req.body;
-
-    if (!email || !password || !fullName) {
-      res.status(400).json({ error: 'Email, password, and full name are required' });
+    // Check for validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.status(400).json({ 
+        error: 'Validation failed', 
+        details: errors.array() 
+      });
       return;
     }
+
+    const { email, password, fullName } = req.body;
 
     // Create user using admin client (bypasses email confirmation)
     const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({

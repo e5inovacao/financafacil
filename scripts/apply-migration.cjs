@@ -1,9 +1,18 @@
 // Script para verificar e aplicar migração
 const { createClient } = require('@supabase/supabase-js');
+require('dotenv').config();
 
-// Configuração do Supabase
-const supabaseUrl = 'https://eczdeoijgompeseffexm.supabase.co';
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVjemRlb2lqZ29tcGVzZWZmZXhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU0NzE5MDgsImV4cCI6MjA3MTA0NzkwOH0.z-egwTdrppB1MuCzTxJLTZs7yV6GyYglbIm724Ht-RI';
+// Configuração do Supabase usando variáveis de ambiente
+const supabaseUrl = process.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('❌ Erro: Variáveis de ambiente VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY são obrigatórias.');
+  console.log('📋 Certifique-se de que o arquivo .env contém:');
+  console.log('VITE_SUPABASE_URL=sua_url_aqui');
+  console.log('VITE_SUPABASE_ANON_KEY=sua_chave_aqui');
+  process.exit(1);
+}
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 

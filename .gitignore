@@ -29,3 +29,72 @@ dist-ssr
 .env.local
 .env.production
 .env.development
+.env.*.local
+
+# Security and sensitive files
+*.key
+*.pem
+*.p12
+*.pfx
+*.crt
+*.cer
+*.der
+*.jks
+*.keystore
+*.truststore
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Configuration files with sensitive data
+config/local.json
+config/production.json
+secrets.json
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Package manager files
+package-lock.json.bak
+yarn.lock.bak
+
+# IDE and editor files
+*.sublime-project
+*.sublime-workspace
+.history/
+
+# Build and deployment
+build/
+dist/
+out/
+.next/
+.nuxt/
+.output/
+
+# Testing
+coverage/
+.nyc_output/
+jest_*/
+
+# Logs and debugging
+*.log.*
+debug.log
+error.log
+access.log
+
+# Backup files
+*.bak
+*.backup
+*.old
