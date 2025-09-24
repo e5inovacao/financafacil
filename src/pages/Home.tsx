@@ -107,8 +107,9 @@ export default function Home() {
       {/* Header com menu */}
       <header className="absolute top-0 left-0 right-0 z-10 py-6">
         <div className="max-w-6xl mx-auto px-6 flex justify-between items-center">
-          <div className="text-gray-900 font-bold text-2xl">
-            Finança Fácil
+          <div className="flex items-center space-x-3">
+            <img src="/img/logo.png" alt="Logo" className="w-8 h-8" />
+            <span className="text-green-600 font-bold text-2xl">Finança Fácil</span>
           </div>
           
           {/* Menu superior direito */}
@@ -535,7 +536,7 @@ export default function Home() {
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">Mensal</h3>
                 <div className="mb-6">
-                  <span className="text-5xl font-bold text-green-600">R$ 59,90</span>
+                  <span className="text-5xl font-bold text-green-600">R$ 19,98</span>
                   <span className="text-gray-600 text-lg">/mês</span>
                 </div>
                 <ul className="text-left space-y-4 mb-8">
@@ -565,9 +566,7 @@ export default function Home() {
                   </li>
                 </ul>
                 <div className="flex justify-center">
-                  <button className="bg-gradient-to-r from-green-600 to-green-700 text-white py-3 px-8 rounded-lg font-semibold hover:from-green-700 hover:to-green-800 transition-all duration-300 transform hover:scale-105 shadow-lg">
-                    Começar Agora
-                  </button>
+                  <Link to="/register" className="bg-gradient-to-r from-green-600 to-green-700 text-white py-3 px-8 rounded-lg font-semibold hover:from-green-700 hover:to-green-800 transition-all duration-300 transform hover:scale-105 shadow-lg inline-block text-center">Começar Agora</Link>
                 </div>
               </div>
             </div>
@@ -586,12 +585,12 @@ export default function Home() {
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">Trimestral</h3>
                 <div className="mb-2">
-                  <span className="text-5xl font-bold text-gray-900">R$ 149,00</span>
+                  <span className="text-5xl font-bold text-green-600">R$ 49,98</span>
                   <span className="text-gray-600 text-lg">/3 meses</span>
                 </div>
                 <div className="mb-6">
                   <div className="inline-flex items-center bg-green-600 text-white px-3 py-1 rounded-full text-sm font-bold mt-2">
-                    Economize R$ 30,70
+                    Economize R$ 9,96
                   </div>
                   <br />
                   <span className="text-sm text-gray-500">vs. plano mensal</span>
@@ -623,9 +622,7 @@ export default function Home() {
                   </li>
                 </ul>
                 <div className="flex justify-center">
-                  <button className="bg-gradient-to-r from-green-600 to-green-700 text-white py-3 px-8 rounded-lg font-semibold hover:from-green-700 hover:to-green-800 transition-all duration-300 transform hover:scale-105 shadow-lg">
-                    Começar Agora
-                  </button>
+                  <Link to="/register" className="bg-gradient-to-r from-green-600 to-green-700 text-white py-3 px-8 rounded-lg font-semibold hover:from-green-700 hover:to-green-800 transition-all duration-300 transform hover:scale-105 shadow-lg inline-block text-center">Começar Agora</Link>
                 </div>
               </div>
             </div>
