@@ -108,7 +108,7 @@ export default function Home() {
       <header className="absolute top-0 left-0 right-0 z-10 py-6">
         <div className="max-w-6xl mx-auto px-6 flex justify-between items-center">
           <div className="flex items-center space-x-3">
-            <img src="/img/logo.png" alt="Logo" className="w-8 h-8" />
+            <img src="/logo.png" alt="Logo" className="w-8 h-8" />
             <span className="text-green-600 font-bold text-2xl">Finança Fácil</span>
           </div>
           
