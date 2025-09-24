@@ -26,14 +26,12 @@ const Login = () => {
     setError('')
 
     try {
-      const { error } = await signIn(email, password)
-      if (error) {
-        setError(error.message)
-      } else {
+      const result = await signIn(email, password)
+      if (result.user) {
         navigate('/dashboard')
       }
-    } catch (err) {
-      setError('Erro inesperado. Tente novamente.')
+    } catch (err: any) {
+      setError(err.message || 'Erro inesperado. Tente novamente.')
     } finally {
       setLoading(false)
     }

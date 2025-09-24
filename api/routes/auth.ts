@@ -2,7 +2,7 @@
  * This is a user authentication API route demo.
  * Handle user registration, login, token management, etc.
  */
-import { Router, type Request, type Response } from 'express';
+import { Router, type Request, type Response, type NextFunction } from 'express';
 import { createClient } from '@supabase/supabase-js';
 import { body, validationResult } from 'express-validator';
 import bcrypt from 'bcryptjs';
@@ -126,20 +126,22 @@ router.post('/register', validateRegistration, async (req: Request, res: Respons
         code: authError.code,
         details: authError
       });
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
         error: authError.message || 'Error creating user',
         details: process.env.NODE_ENV === 'development' ? authError.message : undefined
       });
+      return;
     }
 
     if (!authData.user) {
       console.log('No user data returned from Supabase');
-      return res.status(500).json({ 
+      res.status(500).json({ 
         success: false, 
         error: 'Database error creating new user',
         details: 'No user data returned from Supabase'
       });
+      return;
     }
 
     console.log('User created successfully in auth.users:', authData.user.id);
@@ -148,8 +150,8 @@ router.post('/register', validateRegistration, async (req: Request, res: Respons
     res.status(201).json({
       message: 'User registered successfully',
       user: {
-        id: user.id,
-        email: user.email,
+        id: authData.user.id,
+        email: authData.user.email,
         name: fullName
       }
     });
