@@ -85,6 +85,15 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 /**
+ * Request logging middleware
+ */
+app.use('/api', (req: Request, res: Response, next: NextFunction) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+  console.log('Request body:', req.body);
+  next();
+});
+
+/**
  * API Routes
  */
 app.use('/api/auth', authRoutes);

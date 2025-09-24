@@ -43,7 +43,7 @@ const Register = () => {
     }
 
     try {
-      const userData = await signUp(email, password, name)
+      const userData = await signUp(email, password, name);
       setSuccess('Conta criada com sucesso! Redirecionando...')
       setTimeout(() => {
         navigate('/dashboard')

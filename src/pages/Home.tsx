@@ -114,12 +114,12 @@ export default function Home() {
           
           {/* Menu superior direito */}
           <nav className="flex items-center space-x-6">
-            <button 
-              onClick={scrollToPlans}
+            <a 
+              href="#recursos"
               className="text-gray-700 hover:text-green-600 font-medium transition-colors"
             >
-              Preço
-            </button>
+              Recursos
+            </a>
             <Link 
               to="/login" 
               className="text-gray-700 hover:text-green-600 font-medium transition-colors"
@@ -171,7 +171,7 @@ export default function Home() {
       </section>
 
       {/* Seção de Recursos Principais */}
-      <section className="py-20 bg-white">
+      <section id="recursos" className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
             <div className="inline-flex items-center bg-green-50 text-green-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
@@ -186,17 +186,17 @@ export default function Home() {
             </p>
           </div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center group">
               <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mb-6 mx-auto group-hover:bg-green-200 transition-colors">
                 <BarChart3 className="w-8 h-8 text-green-600" />
               </div>
               <div className="bg-green-50 text-green-700 text-sm font-medium px-3 py-1 rounded-full inline-block mb-4">01</div>
               <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                Suas contas e cartões num só lugar
+                Organize suas finanças
               </h3>
               <p className="text-gray-600 leading-relaxed">
-                Comece cadastrando suas contas e cartões para ter uma visão mais clara das suas finanças.
+                Comece registrando suas receitas e despesas para ter uma visão mais clara das suas finanças.
               </p>
             </div>
             
@@ -223,19 +223,6 @@ export default function Home() {
               </h3>
               <p className="text-gray-600 leading-relaxed">
                 Mantenha tudo sob controle informando sua renda e ganhos extras para ter um ponto de partida.
-              </p>
-            </div>
-            
-            <div className="text-center group">
-              <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mb-6 mx-auto group-hover:bg-green-200 transition-colors">
-                <Clock className="w-8 h-8 text-green-600" />
-              </div>
-              <div className="bg-green-50 text-green-700 text-sm font-medium px-3 py-1 rounded-full inline-block mb-4">04</div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                Transformando em hábito
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
-                Lance os gastos do dia a dia, acompanhe os relatórios sempre que possível e assuma o controle do seu dinheiro.
               </p>
             </div>
           </div>
@@ -282,7 +269,7 @@ export default function Home() {
                 <div className="space-y-3">
                   <div className="flex items-center text-sm text-gray-600">
                     <Check className="w-4 h-4 text-green-600 mr-2 flex-shrink-0" />
-                    Lançamento manual simples
+                    Registro manual simples
                   </div>
                   <div className="flex items-center text-sm text-gray-600">
                     <Check className="w-4 h-4 text-green-600 mr-2 flex-shrink-0" />
@@ -479,7 +466,7 @@ export default function Home() {
               <p className="text-green-100 text-lg">Recursos poderosos para transformar sua gestão financeira</p>
             </div>
             
-            <div className="grid md:grid-cols-4 gap-8 text-center">
+            <div className="grid md:grid-cols-3 gap-8 text-center">
               <div className="group">
                 <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-4 mx-auto group-hover:bg-white/30 transition-colors">
                   <div className="w-6 h-6 bg-white rounded-lg"></div>
@@ -498,132 +485,72 @@ export default function Home() {
                 </div>
                 <div className="text-green-100 font-medium">Metas financeiras personalizadas</div>
               </div>
-              <div className="group">
-                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-4 mx-auto group-hover:bg-white/30 transition-colors">
-                  <div className="w-6 h-6 bg-white rounded-lg"></div>
-                </div>
-                <div className="text-green-100 font-medium">Interface intuitiva e fácil de usar</div>
-              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Planos de Assinatura */}
+      {/* Acesso Gratuito */}
       <section id="planos" className="py-24 bg-gradient-to-br from-gray-50 via-white to-green-50/30">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-20">
             <div className="inline-flex items-center bg-green-50 text-green-700 px-6 py-3 rounded-full text-sm font-semibold mb-6">
               <Target className="w-4 h-4 mr-2" />
-              Planos e Preços
+              Acesso Gratuito
             </div>
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              Escolha o plano ideal para
-              <span className="block text-green-600">sua transformação</span>
+              Acesso Totalmente
+              <span className="block text-green-600">Gratuito</span>
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              Todos os planos incluem acesso completo a todas as funcionalidades premium. Comece com 7 dias gratuitos.
+              Todas as funcionalidades disponíveis sem custo algum. Sem taxas ocultas ou limitações.
             </p>
           </div>
           
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {/* Plano Mensal */}
-            <div className="bg-white border-2 border-gray-200 rounded-3xl p-8 hover:border-green-300 hover:shadow-xl hover:scale-105 transition-all duration-300 relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-green-100 to-green-200 rounded-full -translate-y-16 translate-x-16 opacity-50"></div>
-              <div className="text-center relative z-10">
-                <div className="inline-flex items-center bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
-                  Flexibilidade
+          <div className="max-w-2xl mx-auto">
+            <div className="bg-gradient-to-r from-green-600 to-green-700 text-white rounded-3xl p-8 text-center shadow-2xl">
+              <div className="mb-6">
+                <h3 className="text-3xl font-bold mb-2">100% Gratuito</h3>
+                <div className="text-5xl font-bold mb-2">
+                  R$ 0
+                  <span className="text-lg font-normal opacity-80">/sempre</span>
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">Mensal</h3>
-                <div className="mb-6">
-                  <span className="text-5xl font-bold text-green-600">R$ 19,98</span>
-                  <span className="text-gray-600 text-lg">/mês</span>
-                </div>
-                <ul className="text-left space-y-4 mb-8">
-                  <li className="flex items-center">
-                    <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                      <Check className="w-4 h-4 text-green-600" />
-                    </div>
-                    <span className="text-gray-700">Controle completo de finanças</span>
-                  </li>
-                  <li className="flex items-center">
-                    <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                      <Check className="w-4 h-4 text-green-600" />
-                    </div>
-                    <span className="text-gray-700">Relatórios e gráficos</span>
-                  </li>
-                  <li className="flex items-center">
-                    <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                      <Check className="w-4 h-4 text-green-600" />
-                    </div>
-                    <span className="text-gray-700">Metas financeiras</span>
-                  </li>
-                  <li className="flex items-center">
-                    <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                      <Check className="w-4 h-4 text-green-600" />
-                    </div>
-                    <span className="text-gray-700">Suporte via WhatsApp</span>
-                  </li>
-                </ul>
-                <div className="flex justify-center">
-                  <Link to="/register" className="bg-gradient-to-r from-green-600 to-green-700 text-white py-3 px-8 rounded-lg font-semibold hover:from-green-700 hover:to-green-800 transition-all duration-300 transform hover:scale-105 shadow-lg inline-block text-center">Começar Agora</Link>
-                </div>
+                <p className="opacity-90">Sem taxas ocultas ou limitações</p>
               </div>
-            </div>
-            
-            {/* Plano Trimestral - Recomendado */}
-            <div className="bg-white border-2 rounded-3xl p-8 relative transform scale-105 shadow-2xl hover:shadow-3xl hover:scale-110 transition-all duration-300 overflow-hidden" style={{borderColor: '#16c64f'}}>
-              <div className="absolute inset-0 bg-gradient-to-br from-green-50/50 via-transparent to-green-100/30"></div>
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-20">
-                <span className="bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-3 rounded-full text-sm font-bold shadow-lg">
-                  Recomendado
-                </span>
-              </div>
-              <div className="text-center relative z-10">
-                <div className="inline-flex items-center bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-medium mb-4 mt-4">
-                  Melhor Custo-Benefício
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">Trimestral</h3>
-                <div className="mb-2">
-                  <span className="text-5xl font-bold text-green-600">R$ 49,98</span>
-                  <span className="text-gray-600 text-lg">/3 meses</span>
-                </div>
-                <div className="mb-6">
-                  <div className="inline-flex items-center bg-green-600 text-white px-3 py-1 rounded-full text-sm font-bold mt-2">
-                    Economize R$ 9,96
+              <ul className="text-left space-y-3 mb-8 max-w-md mx-auto">
+                <li className="flex items-center">
+                  <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center mr-3">
+                    <Check className="w-4 h-4 text-white" />
                   </div>
-                  <br />
-                  <span className="text-sm text-gray-500">vs. plano mensal</span>
-                </div>
-                <ul className="text-left space-y-3 mb-8">
-                  <li className="flex items-center">
-                    <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                      <Check className="w-4 h-4 text-green-600" />
-                    </div>
-                    <span className="text-gray-700">Controle completo de finanças</span>
-                  </li>
-                  <li className="flex items-center">
-                    <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                      <Check className="w-4 h-4 text-green-600" />
-                    </div>
-                    <span className="text-gray-700">Relatórios e gráficos</span>
-                  </li>
-                  <li className="flex items-center">
-                    <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                      <Check className="w-4 h-4 text-green-600" />
-                    </div>
-                    <span className="text-gray-700">Metas financeiras</span>
-                  </li>
-                  <li className="flex items-center">
-                    <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                      <Check className="w-4 h-4 text-green-600" />
-                    </div>
-                    <span className="text-gray-700">Suporte via WhatsApp</span>
-                  </li>
-                </ul>
-                <div className="flex justify-center">
-                  <Link to="/register" className="bg-gradient-to-r from-green-600 to-green-700 text-white py-3 px-8 rounded-lg font-semibold hover:from-green-700 hover:to-green-800 transition-all duration-300 transform hover:scale-105 shadow-lg inline-block text-center">Começar Agora</Link>
-                </div>
+                  <span>Controle completo das finanças</span>
+                </li>
+                <li className="flex items-center">
+                  <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center mr-3">
+                    <Check className="w-4 h-4 text-white" />
+                  </div>
+                  <span>Gráficos e relatórios detalhados</span>
+                </li>
+                <li className="flex items-center">
+                  <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center mr-3">
+                    <Check className="w-4 h-4 text-white" />
+                  </div>
+                  <span>Definição de metas financeiras</span>
+                </li>
+                <li className="flex items-center">
+                  <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center mr-3">
+                    <Check className="w-4 h-4 text-white" />
+                  </div>
+                  <span>Gerenciamento de contas</span>
+                </li>
+                <li className="flex items-center">
+                  <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center mr-3">
+                    <Check className="w-4 h-4 text-white" />
+                  </div>
+                  <span>Acesso ilimitado</span>
+                </li>
+              </ul>
+              <div className="flex justify-center">
+                <Link to="/register" className="bg-white text-green-600 py-3 px-8 rounded-lg font-semibold hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg inline-block text-center">Começar Agora - É Grátis!</Link>
               </div>
             </div>
           </div>

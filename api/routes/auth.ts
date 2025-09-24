@@ -32,6 +32,18 @@ const supabaseAdmin = createClient(
   }
 );
 
+// Initialize regular Supabase client for auth operations
+const supabase = createClient(
+  process.env.SUPABASE_URL!,
+  process.env.VITE_SUPABASE_ANON_KEY!,
+  {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    }
+  }
+);
+
 // Validation middleware for registration
 const validateRegistration = [
   body('email')
@@ -69,27 +81,75 @@ router.post('/register', validateRegistration, async (req: Request, res: Respons
 
     const { email, password, fullName } = req.body;
 
-    // Create user using admin client (bypasses email confirmation)
-    const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
-      email,
-      password,
-      email_confirm: true, // Auto-confirm email
-      user_metadata: {
-        full_name: fullName
-      }
-    });
+    console.log('Attempting to create user with Supabase...');
+    console.log('Supabase URL:', process.env.SUPABASE_URL);
+    console.log('Service Role Key exists:', !!process.env.SUPABASE_SERVICE_ROLE_KEY);
+    
+    // Try to create user with admin client first (bypasses email confirmation)
+    let authData, authError;
+    
+    try {
+      // First try with admin client
+      const adminResult = await supabaseAdmin.auth.admin.createUser({
+        email,
+        password,
+        email_confirm: true,
+        user_metadata: {
+          full_name: fullName
+        }
+      });
+      authData = adminResult.data;
+      authError = adminResult.error;
+      console.log('Admin client result:', { authData: !!authData, authError });
+    } catch (adminErr) {
+      console.log('Admin client failed, trying regular client:', adminErr);
+      
+      // If admin fails, try regular client
+      const regularResult = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: fullName
+          }
+        }
+      });
+      authData = regularResult.data;
+      authError = regularResult.error;
+      console.log('Regular client result:', { authData: !!authData, authError });
+    }
 
     if (authError) {
-      console.error('Auth error:', authError);
-      res.status(400).json({ error: authError.message });
-      return;
+      console.error('Auth error details:', {
+        message: authError.message,
+        status: authError.status,
+        code: authError.code,
+        details: authError
+      });
+      return res.status(400).json({
+        success: false,
+        error: authError.message || 'Error creating user',
+        details: process.env.NODE_ENV === 'development' ? authError.message : undefined
+      });
     }
+
+    if (!authData.user) {
+      console.log('No user data returned from Supabase');
+      return res.status(500).json({ 
+        success: false, 
+        error: 'Database error creating new user',
+        details: 'No user data returned from Supabase'
+      });
+    }
+
+    console.log('User created successfully in auth.users:', authData.user.id);
+    console.log('User metadata:', authData.user.user_metadata);
 
     res.status(201).json({
       message: 'User registered successfully',
       user: {
-        id: authData.user.id,
-        email: authData.user.email,
+        id: user.id,
+        email: user.email,
         name: fullName
       }
     });
@@ -113,6 +173,20 @@ router.post('/login', async (req: Request, res: Response): Promise<void> => {
  */
 router.post('/logout', async (req: Request, res: Response): Promise<void> => {
   // TODO: Implement logout logic
+});
+
+/**
+ * error handler middleware
+ */
+router.use((error: Error, req: Request, res: Response, next: NextFunction) => {
+  console.error('Auth route error:', error);
+  console.error('Error stack:', error.stack);
+  console.error('Error message:', error.message);
+  res.status(500).json({
+    success: false,
+    error: 'Server internal error',
+    details: process.env.NODE_ENV === 'development' ? error.message : undefined
+  });
 });
 
 export default router;
