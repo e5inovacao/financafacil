@@ -7,11 +7,19 @@ import { VitePWA } from 'vite-plugin-pwa';
 export default defineConfig({
   build: {
     outDir: 'dist',
+    chunkSizeWarningLimit: 1000,
     rollupOptions: {
       output: {
         entryFileNames: 'assets/[name]-[hash].js',
         chunkFileNames: 'assets/[name]-[hash].js',
-        assetFileNames: 'assets/[name]-[hash].[ext]'
+        assetFileNames: 'assets/[name]-[hash].[ext]',
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          router: ['react-router-dom'],
+          ui: ['lucide-react', 'sonner'],
+          charts: ['recharts'],
+          supabase: ['@supabase/supabase-js']
+        }
       }
     }
   },
