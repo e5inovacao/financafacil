@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useRegisterSW } from 'virtual:pwa-register/react';
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
@@ -14,19 +13,6 @@ export function PWAInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showInstallButton, setShowInstallButton] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
-
-  const {
-    offlineReady: [offlineReady, setOfflineReady],
-    needRefresh: [needRefresh, setNeedRefresh],
-    updateServiceWorker,
-  } = useRegisterSW({
-    onRegistered(r) {
-      console.log('SW Registered: ' + r);
-    },
-    onRegisterError(error) {
-      console.log('SW registration error', error);
-    },
-  });
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -67,10 +53,7 @@ export function PWAInstallPrompt() {
     }
   };
 
-  const close = () => {
-    setOfflineReady(false);
-    setNeedRefresh(false);
-  };
+
 
   return (
     <>
@@ -102,53 +85,7 @@ export function PWAInstallPrompt() {
         </div>
       )}
 
-      {/* Update Available */}
-      {needRefresh && (
-        <div className="fixed bottom-4 left-4 right-4 bg-green-600 text-white p-4 rounded-lg shadow-lg z-50 md:left-auto md:right-4 md:max-w-sm">
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <h3 className="font-semibold text-sm">Atualização Disponível</h3>
-              <p className="text-xs opacity-90 mt-1">
-                Nova versão disponível. Clique para atualizar.
-              </p>
-            </div>
-            <div className="flex gap-2 ml-4">
-              <button
-                onClick={() => updateServiceWorker(true)}
-                className="bg-white text-green-600 px-3 py-1 rounded text-xs font-medium hover:bg-gray-100"
-              >
-                Atualizar
-              </button>
-              <button
-                onClick={close}
-                className="text-white/80 hover:text-white text-xs px-2"
-              >
-                ✕
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
-      {/* Offline Ready */}
-      {offlineReady && (
-        <div className="fixed bottom-4 left-4 right-4 bg-gray-800 text-white p-4 rounded-lg shadow-lg z-50 md:left-auto md:right-4 md:max-w-sm">
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <h3 className="font-semibold text-sm">App Pronto para Offline</h3>
-              <p className="text-xs opacity-90 mt-1">
-                O app agora funciona offline!
-              </p>
-            </div>
-            <button
-              onClick={close}
-              className="text-white/80 hover:text-white text-xs px-2 ml-4"
-            >
-              ✕
-            </button>
-          </div>
-        </div>
-      )}
     </>
   );
 }
