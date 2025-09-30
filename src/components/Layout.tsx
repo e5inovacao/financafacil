@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { LayoutDashboard, BarChart3, Target, LogOut, User, Settings, Menu, X, ArrowLeft } from 'lucide-react'
+import { LayoutDashboard, BarChart3, Target, LogOut, User, Settings, Menu, X, ArrowLeft, TrendingUp } from 'lucide-react'
 import { signOut } from '../lib/supabase'
 import { useAuthStore } from '../lib/auth-store'
 import AccountModal from './AccountModal'
@@ -48,6 +48,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       path: '/goals',
       icon: Target,
       label: 'Metas'
+    },
+    {
+      path: '/limits',
+      icon: TrendingUp,
+      label: 'Limites'
     }
   ]
 

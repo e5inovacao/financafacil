@@ -11,6 +11,7 @@ import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
 import Goals from './pages/Goals'
 import Charts from './pages/Charts'
+import Limits from './pages/Limits'
 import { Accounts } from './pages/Accounts'
 
 // Componente que decide se mostra a landing page ou redireciona para o dashboard
@@ -74,6 +75,15 @@ function App() {
             <AccountProvider>
               <Layout>
                 <Charts />
+              </Layout>
+            </AccountProvider>
+          </ProtectedRoute>
+        } />
+        <Route path="/limits" element={
+          <ProtectedRoute>
+            <AccountProvider>
+              <Layout>
+                <Limits />
               </Layout>
             </AccountProvider>
           </ProtectedRoute>

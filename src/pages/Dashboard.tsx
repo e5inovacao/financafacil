@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Plus, TrendingUp, TrendingDown, DollarSign, Trash2 } from 'lucide-react'
+import { Plus, TrendingUp, TrendingDown, DollarSign, Trash2, AlertTriangle, CheckCircle, X } from 'lucide-react'
 import { getCategories, getSubcategories, getTransactions, createTransaction, deleteTransaction } from '../lib/supabase'
 import { useAuthStore } from '../lib/auth-store'
 import type { Category, Subcategory, Transaction } from '../lib/supabase'
@@ -10,6 +10,9 @@ import { useAccount } from '../contexts/AccountContext'
 import { supabase } from '../lib/supabase'
 import AccountSelector from '../components/AccountSelector'
 import AccountModal from '../components/AccountModal'
+import { useCategoryLimits } from '../hooks/useCategoryLimits'
+import { useLimitNotifications } from '../hooks/useLimitNotifications'
+import LimitProgressBar from '../components/LimitProgressBar'
 
 
 
@@ -24,10 +27,14 @@ const Dashboard: React.FC = () => {
     totals
   } = useAccountTransactions()
   
+  const { limits, limitsProgress: progress, loading: limitsLoading } = useCategoryLimits()
+  const { checkLimits, notifications, hasActiveNotifications } = useLimitNotifications()
+  
   const { balance, income: totalIncome, expense: totalExpense } = totals
-  const [categories, setCategories] = useState<Category[]>([])
-  const [subcategories, setSubcategories] = useState<Subcategory[]>([])
+  const [categories, setCategories] = useState<Category[]>([])  
+  const [subcategories, setSubcategories] = useState<Subcategory[]>([])  
   const [showAccountModal, setShowAccountModal] = useState(false)
+  const [showLimitNotification, setShowLimitNotification] = useState(true)
   // Formulário sempre visível - removido estado showForm
   const [formData, setFormData] = useState({
     title: '',
@@ -42,6 +49,18 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     loadCategories()
   }, [])
+
+  // Verificar limites automaticamente quando o Dashboard carregar
+  useEffect(() => {
+    if (user && currentAccount) {
+      // Aguardar um pouco para garantir que os dados estejam carregados
+      const timer = setTimeout(() => {
+        checkLimits()
+      }, 2000)
+      
+      return () => clearTimeout(timer)
+    }
+  }, [user, currentAccount, checkLimits])
 
   const loadCategories = async (transactionType?: string) => {
     try {
@@ -144,6 +163,11 @@ const Dashboard: React.FC = () => {
       })
       setSubcategories([])
       toast.success('Transação salva com sucesso!')
+      
+      // Verificar limites após criar transação
+      setTimeout(() => {
+        checkLimits()
+      }, 1000)
     } catch (error) {
       console.error('Erro ao criar transação:', error)
       toast.error(`Erro inesperado ao salvar transação: ${error instanceof Error ? error.message : 'Erro desconhecido'}`)
@@ -174,6 +198,32 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Notificação de Limites - Acima do título */}
+      {showLimitNotification && hasActiveNotifications && notifications.length > 0 && (
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <AlertTriangle className="w-4 h-4 text-gray-500" />
+              <span className="text-sm text-gray-600">
+                {notifications.length} limite(s) próximo(s) do valor máximo
+              </span>
+              <a 
+                href="/limits" 
+                className="text-sm text-blue-600 hover:text-blue-800"
+              >
+                Ver detalhes
+              </a>
+            </div>
+            <button
+              onClick={() => setShowLimitNotification(false)}
+              className="text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-900">Painel Financeiro</h1>
         <div className="w-64">
@@ -182,6 +232,8 @@ const Dashboard: React.FC = () => {
           />
         </div>
       </div>
+
+
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -221,6 +273,8 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+
 
       {/* Transaction Form */}
       <div className="bg-[#fefdf9] rounded-lg shadow-lg p-6">
@@ -369,6 +423,65 @@ const Dashboard: React.FC = () => {
             </div>
           </form>
         </div>
+
+
+
+      {/* Widget de Limites - Minimalista */}
+      {!limitsLoading && progress && progress.filter(p => p.status !== 'safe').length > 0 && (
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-medium text-gray-700">Status dos Limites</h3>
+            <div className="flex items-center space-x-3">
+              {progress.filter(p => p.status === 'exceeded').length > 0 && (
+                <span className="text-xs text-red-600">
+                  {progress.filter(p => p.status === 'exceeded').length} excedido(s)
+                </span>
+              )}
+              {progress.filter(p => p.status === 'warning').length > 0 && (
+                <span className="text-xs text-amber-600">
+                  {progress.filter(p => p.status === 'warning').length} alerta(s)
+                </span>
+              )}
+            </div>
+          </div>
+          
+          <div className="space-y-2">
+            {progress
+              .filter(p => p.status !== 'safe')
+              .slice(0, 3)
+              .map((item) => (
+                <div key={`${item.category}-${item.account_id}`} className="flex items-center justify-between py-1">
+                  <span className="text-sm text-gray-600">{item.category}</span>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-16 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                      <div 
+                        className={`h-full rounded-full ${
+                          item.status === 'exceeded' ? 'bg-red-500' : 'bg-amber-500'
+                        }`}
+                        style={{ width: `${Math.min(item.percentage, 100)}%` }}
+                      />
+                    </div>
+                    <span className="text-xs text-gray-500 w-10 text-right">
+                      {item.percentage.toFixed(0)}%
+                    </span>
+                  </div>
+                </div>
+              ))
+            }
+          </div>
+          
+          {progress.filter(p => p.status !== 'safe').length > 3 && (
+            <div className="mt-2 pt-2 border-t border-gray-200">
+              <a 
+                href="/limits" 
+                className="text-xs text-blue-600 hover:text-blue-800"
+              >
+                Ver todos ({progress.filter(p => p.status !== 'safe').length - 3} mais)
+              </a>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Transactions Table */}
       <div className="bg-[#fefdf9] rounded-lg shadow-lg overflow-hidden">

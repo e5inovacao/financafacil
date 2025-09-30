@@ -4,6 +4,10 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 // https://vite.dev/config/
 export default defineConfig({
+  server: {
+    port: 5180,
+    host: true
+  },
   build: {
     outDir: 'dist',
     chunkSizeWarningLimit: 1000,
